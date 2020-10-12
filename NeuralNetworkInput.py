@@ -19,12 +19,12 @@ num_items = int.from_bytes(file.read(1), byte_order)
 rows = int.from_bytes(file.read(1), byte_order)
 cols = int.from_bytes(file.read(1), byte_order)
 
-total_bytes = num_items*rows*cols
+pixals_in_image = rows*cols
 
-data = file.read(total_bytes)
+data = file.read(pixals_in_image*num_items)
 
 #Assumes data will always be an unsigned byte, ie the 3rd byte of the magic number is always \x08
-input_figures = struct.iter_unpack("%dB" % (rows*cols), data)
+input_figures = struct.iter_unpack("%dB" % (pixals_in_image), data)
 input_figures = np.array([*input_figures])
             
 file.close()
@@ -62,8 +62,8 @@ file.close()
 #Set weights and bias
 
 num_hidden_nodes = 4
-#Generate random weights for hidden layer, creates a rows*cols x num_hidden_nodes matrix
-weight_hidden = np.random.rand(rows*cols,num_hidden_nodes)
+#Generate random weights for hidden layer, creates a pixals_in_image x num_hidden_nodes matrix
+weight_hidden = np.random.rand(pixals_in_image,num_hidden_nodes)
 #generate randome weights for output layer, create a num_hidden_nodes matrix x 1 matrix
 weight_output = np.random.rand(num_hidden_nodes,output_nodes)
 
@@ -127,19 +127,26 @@ for epoch in range(200000):
     weight_hidden -= lr * derror_wh
     weight_output -= lr * derror_dwo
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#save weights
-file = open("weights.txt","w")
-file.writeline("weight_hidden")
-file.write(weight_hidden)
-file.writelines()
-file.writeline("weight_hidden")
-file.write(weight_output)
-         
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     
 print(weight_hidden)
 print(weight_output)
 print()
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#save weights to file
+
+file = open("weights.bin","wb")
+
+#init buffer   
+buffer = np.zeros(3, np.uint32)
+struct.pack_into('iii',buffer,0,pixals_in_image,num_hidden_nodes,output_nodes)
+
+file.write(buffer)
+file.write(bytes(weight_hidden))
+file.write(bytes(weight_output))
+
+file.close();
 
 #%%
 #Testing
