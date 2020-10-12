@@ -32,7 +32,7 @@ file.close()
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #Read from target outputs
-output_nodes = 10 #Because need a node for each 0-9
+output_nodes = 10 #Because we need a node for each 0-9
 file = open('testout.bin','rb')
 
 #Discard first 4 bytes, ie the magic number 
@@ -129,7 +129,7 @@ for epoch in range(200000):
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     
-
+#print weights
 print("weight_hidden")
 print(weight_hidden)
 print()
