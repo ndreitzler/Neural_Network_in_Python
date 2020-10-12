@@ -32,7 +32,7 @@ file.close()
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #Read from target outputs
-output_nodes = 5
+output_nodes = 10 #Because need a node for each 0-9
 file = open('testout.bin','rb')
 
 #Discard first 4 bytes, ie the magic number 
@@ -61,7 +61,7 @@ file.close()
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #Set weights and bias
 
-num_hidden_nodes = 4
+num_hidden_nodes = 16 #Arbitray
 #Generate random weights for hidden layer, creates a pixals_in_image x num_hidden_nodes matrix
 weight_hidden = np.random.rand(pixals_in_image,num_hidden_nodes)
 #generate randome weights for output layer, create a num_hidden_nodes matrix x 1 matrix
@@ -129,26 +129,40 @@ for epoch in range(200000):
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     
+
+print("weight_hidden")
 print(weight_hidden)
+print()
+print("weight_output")
 print(weight_output)
 print()
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#save weights to file
-
-file = open("weights.bin","wb")
-
+#save weights
 #init buffer   
 buffer = np.zeros(3, np.uint32)
 struct.pack_into('iii',buffer,0,pixals_in_image,num_hidden_nodes,output_nodes)
 
+file = open("weights.bin","wb")
+
 file.write(buffer)
-file.write(bytes(weight_hidden))
-file.write(bytes(weight_output))
+
+for i in range(pixals_in_image):
+    file.write(struct.pack('d'*num_hidden_nodes, *(weight_hidden)[i]))
+
+for i in range(num_hidden_nodes):
+    file.write(struct.pack('d'*output_nodes, *(weight_output)[i]))
 
 file.close();
 
 #%%
+
+#print(input_figures)
+
+#print(output_figures)
+
+#%%
+'''
 #Testing
 
 #taking Inputs
@@ -208,3 +222,4 @@ result2 = sigmoid(result1)
 result3 = np.dot(result2, weight_output)
 result4 = sigmoid(result3)
 print(result4)
+'''

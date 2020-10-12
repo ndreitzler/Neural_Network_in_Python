@@ -8,7 +8,7 @@ import struct
 magic_number = b'\x00\x00\x08\x03'
 num_items = 4
 rows = 2
-cols = 1
+cols = 2
 
 file = open('testin.bin','wb')
 
@@ -21,6 +21,8 @@ file.write(bytes([num_items,rows,cols]))
 #Write data 
 file.write(struct.pack('BBBB',0,0,0,1))
 file.write(struct.pack('BBBB',1,0,1,1))
+file.write(struct.pack('BBBB',0,0,1,1))
+file.write(struct.pack('BBBB',1,0,0,1))
 
 file.close()
 

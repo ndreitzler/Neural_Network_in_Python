@@ -2,4 +2,4 @@
 *.bin
 train-images.idx3-ubyte
 train-labels.idx1-ubyte
-weights
+NeuralNetwork.py
