@@ -1,6 +1,6 @@
 #Sample Neural Network with one hidden layer
 #Main logic of neural network was created following a guide created by Pratik Shukla and Roberto Iriondo
-#https://medium.com/towards-artificial-intelligence/building-neural-networks-with-python-code-and-math-in-detail-ii-bbe8accbf3d1?source=friends_link&sk=41f329ab1ac53251578a42db2684b9a0
+#Guide used: Building Neural Networks with Python Code and Math in Detail — II
 
 #Import Libraries
 import numpy as np
