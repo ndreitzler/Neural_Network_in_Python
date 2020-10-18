@@ -5,21 +5,31 @@
 #Import Libraries
 import numpy as np
 import struct
+import time
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#Sigmoid function
+def sigmoid(x):
+    return 1/(1+np.exp(-x))
+
+#Derivative of sigmoid function
+def sigmoid_der(x):
+    return sigmoid(x)*(1-sigmoid(x))
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #Read from target outputs
 byte_order = 'big'
 
-file = open('testin.bin','rb')
+file = open('train-images.idx3-ubyte','rb')
 
 #Discard first 4 bytes, ie the magic number 
 #Assumes magic number will always be b'\x00\x00\x08\x03'
 file.seek(4)
 
 #get the number of items, number of rows, and number of columns from the file
-num_items = int.from_bytes(file.read(1), byte_order)
-rows = int.from_bytes(file.read(1), byte_order)
-cols = int.from_bytes(file.read(1), byte_order)
+num_items = int.from_bytes(file.read(4), byte_order)
+rows = int.from_bytes(file.read(4), byte_order)
+cols = int.from_bytes(file.read(4), byte_order)
 
 pixals_in_image = rows*cols
 
@@ -35,14 +45,14 @@ file.close()
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #Read from target outputs
 output_nodes = 10 #Because we need a node for each 0-9
-file = open('testout.bin','rb')
+file = open('train-labels.idx1-ubyte','rb')
 
 #Discard first 4 bytes, ie the magic number 
 #Assumes magic number will always be b'\x00\x00\x08\x01'
 file.seek(4)
 
 #get the number of items from the file
-num_items_out = int.from_bytes(file.read(1), byte_order)
+num_items_out = int.from_bytes(file.read(4), byte_order)
 
 if(num_items_out != num_items):
     print("Item sizes do not match")
@@ -51,8 +61,10 @@ if(num_items_out != num_items):
 data = file.read(num_items)
 target_numbers = struct.unpack("%dB" % (num_items), data)
 target_numbers = np.array([*target_numbers])
-output_figures = np.zeros((num_items,output_nodes),np.uint8)
+
+
 #Convert target output ints into one hot encoding
+output_figures = np.zeros((num_items,output_nodes),np.uint8)
 for i in range(num_items):
     output_figures[i][target_numbers[i]] = 1
     
@@ -73,24 +85,16 @@ weight_output = np.random.rand(num_hidden_nodes,output_nodes)
 #bias = 0.3
 
 #learning rate
-lr = 0.05
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#Sigmoid function
-def sigmoid(x):
-    return 1/(1+np.exp(-x))
-
-#Derivative of sigmoid function
-def sigmoid_der(x):
-    return sigmoid(x)*(1-sigmoid(x))
+lr = 0.005
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #Main Logic for neural network
 #Running our code 10000 times
-    
-for epoch in range(200000):
+
+time_taken = -time.time()
+
+for epoch in range(10000):
     #input for hidden layer
     input_hidden = np.dot(input_figures, weight_hidden)
         
@@ -129,15 +133,18 @@ for epoch in range(200000):
     weight_hidden -= lr * derror_wh
     weight_output -= lr * derror_dwo
 
-
+time_taken += time.time()
+print("This took %d second", time_taken)
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     
 #print weights
+'''
 print("weight_hidden")
 print(weight_hidden)
 print()
 print("weight_output")
 print(weight_output)
 print()
+'''
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #save weights
