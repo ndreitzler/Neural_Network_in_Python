@@ -82,8 +82,8 @@ weight_hidden = np.random.rand(pixals_in_image,num_hidden_nodes)
 weight_output = np.random.rand(num_hidden_nodes,output_nodes)
 
 #bias weight
-bias_hidden = 0.3
-bias_output = 0.3
+bias_hidden = -10000
+bias_output = -50
 
 #learning rate
 lr = 0.05
@@ -95,16 +95,20 @@ lr = 0.05
 
 time_taken = -time.time()
 
-for epoch in range(5):
+for epoch in range(10000):
     #input for hidden layer
     input_hidden = np.dot(input_figures, weight_hidden) + bias_hidden
-        
+    
+    #print(input_hidden)
+    
     #output from hidden layer
     output_hidden = sigmoid(input_hidden)
         
     #Input for output layer
     input_op = np.dot(output_hidden, weight_output) + bias_output
-        
+    
+    #print(input_op)
+    
     #Output for output layer
     output_op = sigmoid(input_op)
     
@@ -139,7 +143,9 @@ for epoch in range(5):
         
     for i in douto_dino:
         bias_output -= lr*i
-        
+    
+    if(epoch % 1000 == 0):
+        print("Help: epoch = %d" % (epoch))
         
 time_taken += time.time()
 print("This took %0.3f second" % time_taken)

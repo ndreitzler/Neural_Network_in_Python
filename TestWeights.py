@@ -113,7 +113,7 @@ for i in range(10):
     r2 = sigmoid(r1)
     #print(r2)
     r3 = np.dot(r2, weight_output) + bias_output
-    #print(r3)
+    print(r3)
     r4 = sigmoid(r3)    
     #print(r4)
 
