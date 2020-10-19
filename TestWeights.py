@@ -34,10 +34,20 @@ buffer = file.read(pixals_in_image*num_hidden_nodes*size_float)
 weight_hidden = struct.iter_unpack('d'*num_hidden_nodes, buffer)
 weight_hidden = np.array([*weight_hidden])
 
+#Read bias_hidden
+buffer = file.read(num_hidden_nodes*size_float)
+bias_hidden = struct.unpack('d'*num_hidden_nodes, buffer)
+bias_hidden = np.array([*bias_hidden])
+
 #Read in weight_output
 buffer = file.read(output_nodes*num_hidden_nodes*size_float)
 weight_output = struct.iter_unpack('d'*output_nodes, buffer)
 weight_output = np.array([*weight_output])
+
+#Read bias_output
+buffer = file.read(output_nodes*num_hidden_nodes*size_float)
+bias_output = struct.unpack('d'*output_nodes, buffer)
+bias_output = np.array([*bias_output])
 
 file.close();
 
@@ -96,13 +106,16 @@ file.close()
 #Run Test
 
 correct = 0
-for i in range(num_items):
-    single_point = test_figures[i]
-    
-    r1 = np.dot(single_point, weight_hidden)
+for i in range(10):
+    #print(test_figures[i])
+    r1 = np.dot(test_figures[i], weight_hidden) + bias_hidden
+    #print(r1)
     r2 = sigmoid(r1)
-    r3 = np.dot(r2, weight_output)
+    #print(r2)
+    r3 = np.dot(r2, weight_output) + bias_output
+    #print(r3)
     r4 = sigmoid(r3)    
+    #print(r4)
 
     guess = 0
     max_val = r4[0]
@@ -110,10 +123,12 @@ for i in range(num_items):
         if(r4[k] > max_val):
             guess = k
             max_val = r4[k]
-    
+    print(guess)
     if(guess == test_numbers[i]):
         correct += 1
-        
+     
+    #print(r4, guess) 
+    
 percent_correct = correct / num_items
 
 print('Num Items: \t', num_items)

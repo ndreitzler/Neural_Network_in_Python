@@ -75,17 +75,18 @@ file.close()
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #Set weights and bias
 
-num_hidden_nodes = 16 #Arbitray
+num_hidden_nodes = 64 #Arbitray
 #Generate random weights for hidden layer, creates a pixals_in_image x num_hidden_nodes matrix
 weight_hidden = np.random.rand(pixals_in_image,num_hidden_nodes)
 #generate randome weights for output layer, create a num_hidden_nodes matrix x 1 matrix
 weight_output = np.random.rand(num_hidden_nodes,output_nodes)
 
 #bias weight
-#bias = 0.3
+bias_hidden = 0.3
+bias_output = 0.3
 
 #learning rate
-lr = 0.005
+lr = 0.05
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -94,15 +95,15 @@ lr = 0.005
 
 time_taken = -time.time()
 
-for epoch in range(10000):
+for epoch in range(5):
     #input for hidden layer
-    input_hidden = np.dot(input_figures, weight_hidden)
+    input_hidden = np.dot(input_figures, weight_hidden) + bias_hidden
         
     #output from hidden layer
     output_hidden = sigmoid(input_hidden)
         
     #Input for output layer
-    input_op = np.dot(output_hidden, weight_output)
+    input_op = np.dot(output_hidden, weight_output) + bias_output
         
     #Output for output layer
     output_op = sigmoid(input_op)
@@ -132,17 +133,30 @@ for epoch in range(10000):
     #update weights
     weight_hidden -= lr * derror_wh
     weight_output -= lr * derror_dwo
-
+    
+    for i in douth_dinh:
+        bias_hidden -= lr*i
+        
+    for i in douto_dino:
+        bias_output -= lr*i
+        
+        
 time_taken += time.time()
-print("This took %d second", time_taken)
+print("This took %0.3f second" % time_taken)
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     
 #print weights
 '''
 print("weight_hidden")
 print(weight_hidden)
 print()
+print("bias_hidden")
+print(bias_hidden)
+print()
 print("weight_output")
 print(weight_output)
+print()
+print("bias_output")
+print(bias_output)
 print()
 '''
 
@@ -158,9 +172,13 @@ file.write(buffer)
 
 for i in range(pixals_in_image):
     file.write(struct.pack('d'*num_hidden_nodes, *(weight_hidden)[i]))
+    
+file.write(struct.pack('d'*num_hidden_nodes, *(bias_hidden)))
 
 for i in range(num_hidden_nodes):
     file.write(struct.pack('d'*output_nodes, *(weight_output)[i]))
+    
+file.write(struct.pack('d'*output_nodes, *(bias_output)))
 
 file.close();
 
